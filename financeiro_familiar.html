@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financeiro · Emillyn & Matheus</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f0f5;color:#1a1a2e;min-height:100vh}
+
+/* NAV */
+.nav{background:#1a1a2e;position:sticky;top:0;z-index:100;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
+.nav::-webkit-scrollbar{height:3px}.nav::-webkit-scrollbar-thumb{background:#444}
+.nav button{color:#8888aa;background:none;border:none;padding:13px 15px;font-size:12px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;letter-spacing:.3px;transition:.2s}
+.nav button.active{color:#fff;border-bottom-color:#7c6fff}
+.nav button:hover:not(.active){color:#ccc}
+
+/* LAYOUT */
+.page{display:none;padding:16px;max-width:960px;margin:0 auto}
+.page.active{display:block}
+
+/* CARDS */
+.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.card-title{font-size:11px;font-weight:700;color:#9999bb;text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
+
+/* GRID METRICS */
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.metric{background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.metric .lbl{font-size:10px;color:#9999bb;text-transform:uppercase;letter-spacing:.5px}
+.metric .val{font-size:18px;font-weight:800;margin-top:3px}
+.green{color:#22c55e}.red{color:#ef4444}.purple{color:#7c6fff}.orange{color:#f97316}.blue{color:#3b82f6}
+
+/* PROGRESS */
+.prog-item{margin-bottom:16px}
+.prog-item:last-child{margin-bottom:0}
+.prog-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.prog-name{font-weight:700;font-size:14px}
+.prog-nums{font-size:12px;color:#888}
+.prog-bar{height:12px;background:#f0f0f5;border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;border-radius:99px;transition:width .6s ease}
+.fill-green{background:linear-gradient(90deg,#22c55e,#16a34a)}
+.fill-purple{background:linear-gradient(90deg,#7c6fff,#5b21b6)}
+.fill-orange{background:linear-gradient(90deg,#fb923c,#ea580c)}
+.fill-blue{background:linear-gradient(90deg,#3b82f6,#1d4ed8)}
+.prog-sub{font-size:11px;color:#aaa;margin-top:4px}
+
+/* COUNTDOWN */
+.countdown{background:linear-gradient(135deg,#1a1a2e,#2d1b69);color:#fff;border-radius:14px;padding:22px;text-align:center;margin-bottom:14px}
+.cd-days{font-size:52px;font-weight:900;color:#a78bfa;line-height:1}
+.cd-label{font-size:13px;color:#c4b5fd;margin-top:6px}
+.cd-date{font-size:11px;color:#7c6fff;margin-top:2px}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:left;padding:7px 10px;color:#aaa;font-weight:700;font-size:10px;text-transform:uppercase;border-bottom:2px solid #f0f0f5}
+td{padding:8px 10px;border-bottom:1px solid #f8f8fc;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafe}
+.td-r{text-align:right}
+.amt-in{color:#16a34a;font-weight:700}
+.amt-out{color:#dc2626;font-weight:600}
+.amt-neutral{color:#555;font-weight:600}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;white-space:nowrap}
+.b-pago{background:#dcfce7;color:#16a34a}
+.b-pendente{background:#fef9c3;color:#a16207}
+.b-auto{background:#e0e7ff;color:#4338ca}
+.b-nao-pago{background:#fee2e2;color:#dc2626}
+.b-aguardando{background:#f3e8ff;color:#7e22ce}
+.b-planejado{background:#f0f9ff;color:#0369a1}
+
+/* OVERVIEW TABLE */
+.ov-table td:not(:first-child){text-align:right}
+.ov-table th:not(:first-child){text-align:right}
+.row-real{background:#f8fff8}
+.row-plan td{color:#999;font-style:italic}
+.row-total{font-weight:700;border-top:2px solid #e8e8f0 !important}
+
+/* ALLOCATION CARD */
+.alloc{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.alloc-item{background:#f8f8fc;border-radius:10px;padding:12px;text-align:center}
+.alloc-item .a-val{font-size:17px;font-weight:800;color:#1a1a2e}
+.alloc-item .a-lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.alloc-item .a-pct{font-size:11px;color:#7c6fff;font-weight:600;margin-top:1px}
+
+/* SECTION DIVIDER */
+.sec{font-size:11px;font-weight:800;color:#ccc;text-transform:uppercase;letter-spacing:1px;margin:18px 0 8px;padding-left:2px}
+
+/* SOBRA HIGHLIGHT */
+.sobra-box{background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:14px;display:flex;justify-content:space-between;align-items:center}
+.sobra-box.negativa{background:#fff1f2;border-color:#fca5a5}
+.sobra-label{font-size:12px;color:#555;font-weight:600}
+.sobra-val{font-size:22px;font-weight:900}
+
+/* NOTA */
+.nota{font-size:11px;color:#aaa;padding:8px 10px;font-style:italic}
+
+/* RESPONSIVO */
+@media(max-width:480px){
+  .metrics{grid-template-columns:repeat(3,1fr)}
+  .metric .val{font-size:14px}
+  .alloc{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="nav" id="nav"></div>
+<div id="pages"></div>
+
+<script>
+// ─── DADOS ───────────────────────────────────────────────────────────────────
+
+const METAS = { casa: 10000, casamento: 4000, reserva_alvo: 6000 };
+const WEDDING_DATE = new Date('2026-11-21');
+
+// Cofrinhos acumulados (calculados mês a mês)
+// Agosto: nada guardado (mês de reset com surpresas)
+// Set em diante: plano aplicado
+
+const planejado = [
+  // { mes, casa, reserva, casamento } — baseado em renda real por mês
+  { mes:'Ago/26', casa:0,   reserva:0,   casamento:0    }, // mês de reset
+  { mes:'Set/26', casa:0,   reserva:0,   casamento:0    }, // apertado, sem depósito
+  { mes:'Out/26', casa:0,   reserva:0,   casamento:2000 }, // usa buffer terreno set p/ completar
+  { mes:'Nov/26', casa:473, reserva:203, casamento:2000 }, // Ype MIS + lazer enxuto libera cofrinhos
+  { mes:'Dez/26', casa:202, reserva:87,  casamento:0    }, // panificadora ajuda na transição
+  { mes:'Jan/27', casa:642, reserva:275, casamento:0    },
+  { mes:'Fev/27', casa:664, reserva:285, casamento:0    },
+  { mes:'Mar/27', casa:664, reserva:285, casamento:0    },
+  { mes:'Abr/27', casa:664, reserva:285, casamento:0    },
+  { mes:'Mai/27', casa:812, reserva:348, casamento:0    },
+];
+
+// Acumulado por mês
+let cumCasa=0, cumReserva=0, cumCasamento=0;
+planejado.forEach(p=>{
+  cumCasa+=p.casa; p.cumCasa=cumCasa;
+  cumReserva+=p.reserva; p.cumReserva=cumReserva;
+  cumCasamento+=p.casamento; p.cumCasamento=Math.min(cumCasamento,METAS.casamento);
+});
+
+// ─── MÊS DE AGOSTO (DADOS REAIS) ─────────────────────────────────────────────
+
+const AGO = {
+  entradas: [
+    { obs:'Komprão', cat:'Publi',         valor:1833.00, status:'pago' },
+    { obs:'Emillyn BLF', cat:'Salário',   valor:2500.00, status:'pago' },
+    { obs:'Matheus BLF (bruto)', cat:'Salário', valor:6000.00, status:'pago', nota:'R$2.000 desconto carro na fonte' },
+    { obs:'BC Cassia', cat:'Best Criadora', valor:97.90, status:'pago' },
+    { obs:'BC Day',   cat:'Best Criadora', valor:57.90,  status:'pago', nota:'parcial — sobrancelha Eça' },
+    { obs:'BC Dessa', cat:'Best Criadora', valor:97.90,  status:'pendente' },
+    { obs:'BC Daiane',cat:'Best Criadora', valor:97.90,  status:'pendente' },
+  ],
+  saidasFixas: [
+    { obs:'Carro (desconto BLF)',  cat:'Carro',        valor:2000.00, status:'auto',      data:'01/08' },
+    { obs:'Cartão MP',             cat:'Dívida',        valor:100.00,  status:'pendente',  data:'01/08' },
+    { obs:'Cartão Inter',          cat:'Dívida',        valor:445.00,  status:'pendente',  data:'01/08' },
+    { obs:'Claude',                cat:'Trabalho',      valor:110.00,  status:'pago',      data:'02/08' },
+    { obs:'Contabilidade',         cat:'Trabalho',      valor:100.00,  status:'pago',      data:'03/08' },
+    { obs:'Serasa Ailos 1/6',      cat:'Dívida',        valor:31.73,   status:'pago',      data:'04/08' },
+    { obs:'Tablet 6/6',            cat:'Trabalho',      valor:317.00,  status:'pago',      data:'04/08' },
+    { obs:'Escova 2/6',            cat:'Autocuidado',   valor:41.00,   status:'pago',      data:'04/08' },
+    { obs:'Carrinho bebê 09/12',   cat:'Filhos',        valor:35.00,   status:'pago',      data:'10/08' },
+    { obs:'Cadeira bebê 09/12',    cat:'Filhos',        valor:44.00,   status:'pago',      data:'10/08' },
+    { obs:'Empréstimo pai 05/06',  cat:'Crédito',       valor:209.58,  status:'pago',      data:'10/08' },
+    { obs:'Empréstimo pai 03/13',  cat:'Crédito',       valor:189.32,  status:'pago',      data:'10/08' },
+    { obs:'iFood',                 cat:'Assinatura',    valor:7.95,    status:'pendente',  data:'10/08' },
+    { obs:'Spotify',               cat:'Assinatura',    valor:31.90,   status:'pendente',  data:'10/08' },
+    { obs:'Disney+',               cat:'Assinatura',    valor:46.90,   status:'pago',      data:'11/08' },
+    { obs:'Multa Duque 7/10',      cat:'Dívida',        valor:151.80,  status:'aguardando',data:'15/08' },
+    { obs:'Nádia 1+2+1',           cat:'Autocuidado',   valor:238.00,  status:'pago',      data:'15/08' },
+    { obs:'Seguro de vida',        cat:'Autocuidado',   valor:17.00,   status:'pendente',  data:'15/08' },
+    { obs:'Apple Memória',         cat:'Trabalho',      valor:60.00,   status:'pendente',  data:'15/08' },
+    { obs:'CapCut',                cat:'Trabalho',      valor:35.00,   status:'pendente',  data:'15/08' },
+    { obs:'IR Juros 2025 1/3',     cat:'Dívida',        valor:200.00,  status:'aguardando',data:'17/08' },
+    { obs:'DAS atrasado 1/26',     cat:'Dívida',        valor:50.00,   status:'aguardando',data:'17/08' },
+    { obs:'Canva',                 cat:'Trabalho',      valor:33.00,   status:'pendente',  data:'20/08' },
+    { obs:'Aluguel',               cat:'Casa',          valor:1000.00, status:'nao-pago',  data:'21/08' },
+    { obs:'Internet',              cat:'Casa',          valor:170.00,  status:'pendente',  data:'22/08' },
+    { obs:'Faculdade',             cat:'Faculdade',     valor:110.00,  status:'pago',      data:'22/08' },
+    { obs:'Inglês Pierre',         cat:'Filhos',        valor:282.00,  status:'pendente',  data:'25/08' },
+    { obs:'Plano celular',         cat:'Trabalho',      valor:40.00,   status:'pendente',  data:'24/08' },
+  ],
+  saidasVar: [
+    { obs:'Marmita almoço',  cat:'Alimentação', valor:19.00  },
+    { obs:'Lanche/Conveniência', cat:'Alimentação', valor:125.00 },
+    { obs:'Mercado',         cat:'Alimentação', valor:757.00 },
+    { obs:'Fralda',          cat:'Filhos',      valor:70.00  },
+    { obs:'Chá Pamela',      cat:'Presente',    valor:97.00  },
+    { obs:'Fábio (dívida)',  cat:'Dívida',      valor:500.00 },
+    { obs:'Conserto celular',cat:'Pessoal',     valor:690.00, nota:'não atualizado na planilha' },
+  ],
+};
+
+// Calcular totais agosto
+const agoEntBruto = AGO.entradas.reduce((s,e)=>s+e.valor,0);
+const agoDescCarro = 2000;
+const agoEntLiq = agoEntBruto - agoDescCarro;
+const agoSfTotal = AGO.saidasFixas.filter(s=>s.obs!=='Carro (desconto BLF)').reduce((s,e)=>s+e.valor,0);
+const agoSvTotal = AGO.saidasVar.reduce((s,e)=>s+e.valor,0);
+const agoSobra = agoEntLiq - agoSfTotal - agoSvTotal;
+
+// ─── MESES PLANEJADOS (OUT–MAI) ───────────────────────────────────────────────
+
+// Receita base mensal a partir de novembro
+// Emi BLF R$2.500 (dia 15) + Mat BLF R$2.000 (dia 15) + Komprão R$1.833 (dia 29)
+// BC Paula R$87,90 (dia 15) + BC Daiane R$87,90 (dia 8) + BC Ana R$97,90 (dia 11)
+// Andressa Mentoria Estrutura R$550 (dia 25) + Panificadora Kelly R$500 (dia 29)
+const RENDA_BASE   = 7656.70;
+const VAR_EST      = 2300;    // estimativa variáveis (inclui lazer R$400 casal+família)
+const LAZER        = 400;     // R$100 casal + R$300 família (inclui brinquedos e extras pessoais)
+
+// Fixas permanentes — todo mês
+const FIXAS_BASE = [
+  { obs:'Cartão MP',     cat:'Dívida',      valor:100,   dia:1  },
+  { obs:'Cartão Inter',  cat:'Dívida',      valor:122,   dia:1  },
+  { obs:'Contabilidade', cat:'Trabalho',    valor:100,   dia:3  },
+  { obs:'iFood',         cat:'Assinatura',  valor:7.95,  dia:10 },
+  { obs:'Streaming',     cat:'Assinatura',  valor:30,    dia:10 },
+  { obs:'Claude IA',     cat:'Trabalho',    valor:110,   dia:13 },
+  { obs:'DAS MEI',       cat:'Trabalho',    valor:50.59, dia:12 },
+  { obs:'Plano celular', cat:'Trabalho',    valor:40,    dia:13 },
+  { obs:'Seguro vida',   cat:'Saúde',       valor:17,    dia:15 },
+  { obs:'iCloud 2TB',    cat:'Trabalho',    valor:65.90, dia:26 },
+  { obs:'CapCut',        cat:'Trabalho',    valor:35,    dia:21 },
+  { obs:'Aluguel',       cat:'Casa',        valor:1000,  dia:21 },
+  { obs:'Internet',      cat:'Casa',        valor:170,   dia:22 },
+  { obs:'Faculdade',     cat:'Faculdade',   valor:250,   dia:5  },
+  { obs:'Inglês Pierre', cat:'Filhos',      valor:285,   dia:25 },
+  { obs:'Carro Matheus',    cat:'Dívida',   valor:2000,  dia:21 },
+  { obs:'Mercado + fralda', cat:'Casa',    valor:1200,  dia:5  },
+  { obs:'Gasolina',      cat:'Casa',       valor:150,   dia:5  },
+  { obs:'Gasolina',      cat:'Casa',       valor:150,   dia:15 },
+  { obs:'Gasolina',      cat:'Casa',       valor:150,   dia:25 },
+];
+const FIXAS_BASE_TOT = FIXAS_BASE.reduce((s,f)=>s+f.valor,0);
+
+const mesesPlan = [
+  { id:'set26', label:'Set/26', temCasamento:false }, // Real — handled by buildSetembro
+  {
+    id:'nov26', label:'Nov/26', temCasamento:true,
+    rendaExtra:[
+      { obs:'Ype MIS (publi — 30/11)', cat:'Publi', valor:500, tag:'🌟 único' },
+    ],
+    fixasExtra:[
+      { obs:'Serasa Ailos 4/6',         cat:'Dívida',      valor:31.73  },
+      { obs:'Escova 5/6',               cat:'Autocuidado', valor:41,    tag:'penúltima' },
+      { obs:'Multa Duque 10/10',        cat:'Dívida',      valor:151.80,tag:'✓ última' },
+      { obs:'DAS atrasado 3/8',         cat:'Dívida',      valor:100    },
+      { obs:'Emp. pai: cartão 7/13',    cat:'Crédito',     valor:189.32 },
+      { obs:'Emp. pai: Lucradiva 3/12', cat:'Crédito',     valor:100    },
+      { obs:'Emp. pai: BLF 4/9',        cat:'Crédito',     valor:211.11 },
+      { obs:'Carro Mat. 5/5',           cat:'Dívida',      valor:200,   tag:'✓ última' },
+      { obs:'Retocar tintura 💍',       cat:'Autocuidado', valor:100    },
+    ],
+  },
+  {
+    id:'dez26', label:'Dez/26', temCasamento:false,
+    rendaExtra:[],
+    fixasExtra:[
+      { obs:'Serasa Ailos 5/6',         cat:'Dívida',      valor:31.73, tag:'penúltima' },
+      { obs:'Escova 6/6',               cat:'Autocuidado', valor:41,    tag:'✓ última' },
+      { obs:'DAS atrasado 4/8',         cat:'Dívida',      valor:100    },
+      { obs:'Emp. pai: cartão 8/13',    cat:'Crédito',     valor:189.32 },
+      { obs:'Emp. pai: Lucradiva 4/12', cat:'Crédito',     valor:100    },
+      { obs:'Emp. pai: BLF 5/9',        cat:'Crédito',     valor:211.11 },
+      { obs:'Neg. Serasa: emp. 1/36',   cat:'Dívida',      valor:745.48,tag:'🆕 novo' },
+      { obs:'Neg. Serasa: cartão 1/36', cat:'Dívida',      valor:106.02,tag:'🆕 novo' },
+      { obs:'Plano de Saúde',           cat:'Saúde',       valor:800,   tag:'🆕 novo' },
+      { obs:'Boticário (quitação)',      cat:'Dívida',      valor:96,    tag:'único' },
+      { obs:'Senff (quitação)',          cat:'Dívida',      valor:492,   tag:'único' },
+    ],
+  },
+  {
+    id:'jan27', label:'Jan/27', temCasamento:false,
+    rendaExtra:[],
+    fixasExtra:[
+      { obs:'Serasa Ailos 6/6',         cat:'Dívida',      valor:31.73, tag:'✓ última' },
+      { obs:'DAS atrasado 5/8',         cat:'Dívida',      valor:100    },
+      { obs:'Emp. pai: cartão 9/13',    cat:'Crédito',     valor:189.32 },
+      { obs:'Emp. pai: Lucradiva 5/12', cat:'Crédito',     valor:100    },
+      { obs:'Emp. pai: BLF 6/9',        cat:'Crédito',     valor:211.11 },
+      { obs:'Neg. Serasa: emp. 2/36',   cat:'Dívida',      valor:745.48 },
+      { obs:'Neg. Serasa: cartão 2/36', cat:'Dívida',      valor:106.02 },
+      { obs:'Plano de Saúde',           cat:'Saúde',       valor:800    },
+    ],
+  },
+  {
+    id:'fev27', label:'Fev/27', temCasamento:false,
+    rendaExtra:[],
+    fixasExtra:[
+      { obs:'DAS atrasado 6/8',         cat:'Dívida',      valor:100    },
+      { obs:'Emp. pai: cartão 10/13',   cat:'Crédito',     valor:189.32 },
+      { obs:'Emp. pai: Lucradiva 6/12', cat:'Crédito',     valor:100    },
+      { obs:'Emp. pai: BLF 7/9',        cat:'Crédito',     valor:211.11 },
+      { obs:'Neg. Serasa: emp. 3/36',   cat:'Dívida',      valor:745.48 },
+      { obs:'Neg. Serasa: cartão 3/36', cat:'Dívida',      valor:106.02 },
+      { obs:'Plano de Saúde',           cat:'Saúde',       valor:800    },
+    ],
+  },
+  {
+    id:'mar27', label:'Mar/27', temCasamento:false,
+    rendaExtra:[],
+    fixasExtra:[
+      { obs:'DAS atrasado 7/8',         cat:'Dívida',      valor:100,   tag:'penúltima' },
+      { obs:'Emp. pai: cartão 11/13',   cat:'Crédito',     valor:189.32 },
+      { obs:'Emp. pai: Lucradiva 7/12', cat:'Crédito',     valor:100    },
+      { obs:'Emp. pai: BLF 8/9',        cat:'Crédito',     valor:211.11,tag:'penúltima' },
+      { obs:'Neg. Serasa: emp. 4/36',   cat:'Dívida',      valor:745.48 },
+      { obs:'Neg. Serasa: cartão 4/36', cat:'Dívida',      valor:106.02 },
+      { obs:'Plano de Saúde',           cat:'Saúde',       valor:800    },
+    ],
+  },
+  {
+    id:'abr27', label:'Abr/27', temCasamento:false,
+    rendaExtra:[],
+    fixasExtra:[
+      { obs:'DAS atrasado 8/8',         cat:'Dívida',      valor:100,   tag:'✓ última' },
+      { obs:'Emp. pai: cartão 12/13',   cat:'Crédito',     valor:189.32,tag:'penúltima' },
+      { obs:'Emp. pai: Lucradiva 8/12', cat:'Crédito',     valor:100    },
+      { obs:'Emp. pai: BLF 9/9',        cat:'Crédito',     valor:211.11,tag:'✓ última' },
+      { obs:'Neg. Serasa: emp. 5/36',   cat:'Dívida',      valor:745.48 },
+      { obs:'Neg. Serasa: cartão 5/36', cat:'Dívida',      valor:106.02 },
+      { obs:'Plano de Saúde',           cat:'Saúde',       valor:800    },
+    ],
+  },
+  {
+    id:'mai27', label:'Mai/27', temCasamento:false,
+    rendaExtra:[],
+    fixasExtra:[
+      { obs:'DAS atrasado 8/8 (últ.)',  cat:'Dívida',      valor:100,   tag:'✓ última' },
+      { obs:'Emp. pai: cartão 13/13',   cat:'Crédito',     valor:189.32,tag:'✓ última' },
+      { obs:'Emp. pai: Lucradiva 9/12', cat:'Crédito',     valor:100    },
+      { obs:'Neg. Serasa: emp. 6/36',   cat:'Dívida',      valor:745.48 },
+      { obs:'Neg. Serasa: cartão 6/36', cat:'Dívida',      valor:106.02 },
+      { obs:'Plano de Saúde',           cat:'Saúde',       valor:800    },
+    ],
+  },
+];
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+
+const fmt = v => 'R$ ' + v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const pct = (v,t) => t>0?Math.min(100,Math.round(v/t*100)):0;
+
+const statusBadge = s => {
+  const map = {pago:'b-pago Pago',recebido:'b-pago Recebido','a-receber':'b-pendente A receber',
+               pendente:'b-pendente Pendente',auto:'b-auto Desconto auto',
+               'nao-pago':'b-nao-pago Não pago',aguardando:'b-aguardando Aguardando boleto',planejado:'b-planejado Planejado'};
+  const [cls,txt] = (map[s]||'b-pendente Pendente').split(' ');
+  return `<span class="badge ${cls}">${txt}</span>`;
+};
+
+// TABs
+const tabs = [
+  {id:'geral', label:'📊 Geral'},
+  {id:'ago26', label:'Ago'},
+  {id:'set26', label:'Set'},
+  {id:'out26', label:'Out'},
+  ...mesesPlan.slice(1).map(m=>({id:m.id,label:m.label.split('/')[0]}))
+];
+
+document.getElementById('nav').innerHTML = tabs.map((t,i)=>
+  `<button onclick="show('${t.id}')" id="btn-${t.id}" ${i===0?'class="active"':''}>${t.label}</button>`
+).join('');
+
+function show(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  const el = document.getElementById('page-'+id);
+  if(el) el.classList.add('active');
+  const btn = document.getElementById('btn-'+id);
+  if(btn) btn.classList.add('active');
+}
+
+// ─── PÁGINA VISÃO GERAL ───────────────────────────────────────────────────────
+
+function buildGeral(){
+  const today = new Date();
+  const diff = Math.ceil((WEDDING_DATE-today)/(1000*60*60*24));
+  const last = planejado[planejado.length-1];
+
+  const casaAcum = last.cumCasa;
+  const resAcum  = last.cumReserva;
+  const casAcum  = last.cumCasamento;
+
+  const html = `
+<div class="countdown">
+  <div class="cd-days">${diff}</div>
+  <div class="cd-label">dias até o casamento</div>
+  <div class="cd-date">💍 21 de novembro de 2026</div>
+</div>
+
+<div class="card" style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;border:none">
+  <div class="card-title" style="color:#a78bfa;border-bottom-color:#2d2d5e">📌 Regra do Mês — Fechar a Mão</div>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <span style="font-size:18px;flex-shrink:0">🛑</span>
+      <div style="font-size:13px;line-height:1.5;color:#e2e8f0">Passou o mês <strong style="color:#fff">sem comprar nada fora do padrão.</strong> Gasto extra só no final do mês, com decisão consciente dos dois.</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <span style="font-size:18px;flex-shrink:0">💳</span>
+      <div style="font-size:13px;line-height:1.5;color:#e2e8f0">Qualquer compra de <strong style="color:#fff">casa, pessoal, brinquedo ou roupa</strong> sai do lazer família (R$300) ou casal (R$100). Esgotou o lazer, não compra.</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <span style="font-size:18px;flex-shrink:0">✅</span>
+      <div style="font-size:13px;line-height:1.5;color:#e2e8f0">Pizzaria + panificadora com parquinho já cobrem o lazer <strong style="color:#fff">sem gastar nada extra.</strong> O dinheiro que sobra vai pro cofrinho.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Metas — projeção até Mai/27</div>
+  <div class="prog-item">
+    <div class="prog-header">
+      <span class="prog-name">🏠 Casa Própria</span>
+      <span class="prog-nums">${fmt(casaAcum)} de ${fmt(METAS.casa)}</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill fill-green" style="width:${pct(casaAcum,METAS.casa)}%"></div></div>
+    <div class="prog-sub">${pct(casaAcum,METAS.casa)}% · Meta em Mai/27 (pode bater em Abr/27)</div>
+  </div>
+  <div class="prog-item">
+    <div class="prog-header">
+      <span class="prog-name">💍 Casamento</span>
+      <span class="prog-nums">${fmt(casAcum)} de ${fmt(METAS.casamento)}</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill fill-purple" style="width:${pct(casAcum,METAS.casamento)}%"></div></div>
+    <div class="prog-sub">${pct(casAcum,METAS.casamento)}% · Quitado em Nov/26</div>
+  </div>
+  <div class="prog-item">
+    <div class="prog-header">
+      <span class="prog-name">🛡️ Reserva</span>
+      <span class="prog-nums">${fmt(resAcum)} de ${fmt(METAS.reserva_alvo)}</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill fill-blue" style="width:${pct(resAcum,METAS.reserva_alvo)}%"></div></div>
+    <div class="prog-sub">${pct(resAcum,METAS.reserva_alvo)}% · Crescendo consistentemente</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Regra de Alocação</div>
+  <div class="alloc">
+    <div class="alloc-item"><div class="a-val">70%</div><div class="a-lbl">Casa</div></div>
+    <div class="alloc-item"><div class="a-val">30%</div><div class="a-lbl">Reserva</div></div>
+    <div class="alloc-item"><div class="a-val">R$100</div><div class="a-lbl">Lazer Casal</div></div>
+    <div class="alloc-item"><div class="a-val">R$300</div><div class="a-lbl">Lazer Família</div></div>
+  </div>
+  <div class="nota">Out–Nov: +R$2.000/mês para Casamento antes de dividir · Brinquedos e extras saem do lazer · Gasto fora do padrão só no fim do mês</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Projeção mês a mês</div>
+  <div class="tbl-wrap">
+  <table class="ov-table">
+    <thead><tr>
+      <th>Mês</th><th>Casa</th><th>Total Casa</th><th>Reserva</th><th>Total Reserva</th><th>Casamento</th>
+    </tr></thead>
+    <tbody>
+    ${planejado.map((p,i)=>`
+      <tr class="${i===0?'row-plan':''}">
+        <td><strong>${p.mes}</strong></td>
+        <td class="td-r ${p.casa>0?'green':''}">${p.casa>0?'+'+fmt(p.casa):'—'}</td>
+        <td class="td-r"><strong>${fmt(p.cumCasa)}</strong></td>
+        <td class="td-r ${p.reserva>0?'blue':''}">${p.reserva>0?'+'+fmt(p.reserva):'—'}</td>
+        <td class="td-r">${fmt(p.cumReserva)}</td>
+        <td class="td-r ${p.casamento>0?'purple':''}">${p.casamento>0?fmt(p.cumCasamento):'—'}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Divisas por fase</div>
+  <div class="nota" style="margin-bottom:10px">Agosto: mês de reset · Set: sem cofrinho · Out–Nov: casamento R$2.000/mês · Dez em diante: pleno na casa</div>
+  <div class="metrics">
+    <div class="metric"><div class="lbl">Casa até Mai/27</div><div class="val green">${fmt(casaAcum)}</div></div>
+    <div class="metric"><div class="lbl">Reserva até Mai/27</div><div class="val blue">${fmt(resAcum)}</div></div>
+    <div class="metric"><div class="lbl">Casamento</div><div class="val purple">${fmt(casAcum)}</div></div>
+  </div>
+</div>`;
+
+  return html;
+}
+
+// ─── PÁGINA AGOSTO ────────────────────────────────────────────────────────────
+
+function buildAgosto(){
+  const rows_ent = AGO.entradas.map(e=>`
+    <tr>
+      <td>${e.obs}</td>
+      <td>${e.cat}</td>
+      <td class="td-r amt-in">${fmt(e.valor)}</td>
+      <td>${statusBadge(e.status)}</td>
+      ${e.nota?`<td class="nota" style="font-size:10px">${e.nota}</td>`:'<td></td>'}
+    </tr>`).join('');
+
+  const rows_sf = AGO.saidasFixas.map(s=>`
+    <tr>
+      <td>${s.obs}</td>
+      <td>${s.cat}</td>
+      <td class="td-r amt-out">${fmt(s.valor)}</td>
+      <td>${statusBadge(s.status)}</td>
+      <td style="color:#aaa;font-size:11px">${s.data||''}</td>
+    </tr>`).join('');
+
+  const rows_sv = AGO.saidasVar.map(s=>`
+    <tr>
+      <td>${s.obs}</td>
+      <td>${s.cat}</td>
+      <td class="td-r amt-out">${fmt(s.valor)}</td>
+      <td>${s.nota?`<span style="font-size:10px;color:#aaa">${s.nota}</span>`:''}</td>
+    </tr>`).join('');
+
+  const sobraClass = agoSobra>=0?'green':'red';
+  const sobraBoxClass = agoSobra>=0?'':'negativa';
+
+  return `
+<div class="metrics">
+  <div class="metric"><div class="lbl">Entradas líq.</div><div class="val green">${fmt(agoEntLiq)}</div></div>
+  <div class="metric"><div class="lbl">Saídas total</div><div class="val red">${fmt(agoSfTotal+agoSvTotal)}</div></div>
+  <div class="metric"><div class="lbl">Sobra</div><div class="val ${sobraClass}">${fmt(agoSobra)}</div></div>
+</div>
+
+<div class="sobra-box ${sobraBoxClass}" style="margin-bottom:14px">
+  <div>
+    <div class="sobra-label">Cofrinhos agosto</div>
+    <div style="font-size:11px;color:#aaa;margin-top:2px">Mês de reset — surpresas consumiram a sobra</div>
+  </div>
+  <div class="sobra-val red">R$ 0</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Entradas — bruto R${fmt(agoEntBruto).replace('R$ ','')} | desconto carro R$2.000</div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Descrição</th><th>Categoria</th><th class="td-r">Valor</th><th>Status</th><th>Obs</th></tr></thead>
+    <tbody>${rows_ent}</tbody>
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Saídas Fixas · ${fmt(agoSfTotal)}</div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Descrição</th><th>Categoria</th><th class="td-r">Valor</th><th>Status</th><th>Data</th></tr></thead>
+    <tbody>${rows_sf}</tbody>
+  </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Saídas Variáveis · ${fmt(agoSvTotal)} <span style="color:#e57373;font-size:10px">(parcial — planilha em atualização)</span></div>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Descrição</th><th>Categoria</th><th class="td-r">Valor</th><th>Obs</th></tr></thead>
+    <tbody>${rows_sv}</tbody>
+  </table>
+  </div>
+</div>`;
+}
+
+// ─── PÁGINAS PLANEJADAS ───────────────────────────────────────────────────────
+
+function buildPlanMes(mes, idx){
+  const plan = planejado.find(p=>p.mes===mes.label) || planejado[planejado.length-1];
+
+  // Mês numérico a partir do label (ex: "Out/26" → "10")
+  const mesMap = {Jan:'01',Fev:'02',Mar:'03',Abr:'04',Mai:'05',Jun:'06',Jul:'07',Ago:'08',Set:'09',Out:'10',Nov:'11',Dez:'12'};
+  const mesNum = mesMap[mes.label.split('/')[0]] || '??';
+  const fmtDia = dia => dia ? String(dia).padStart(2,'0')+'/'+mesNum : '';
+
+  // Renda
+  const rendaExt  = (mes.rendaExtra||[]).reduce((s,r)=>s+r.valor,0);
+  const rendaTotal = RENDA_BASE + rendaExt;
+
+  // Fixas
+  const fixasExt   = (mes.fixasExtra||[]).reduce((s,f)=>s+f.valor,0);
+  const fixasTotal = FIXAS_BASE_TOT + fixasExt;
+
+  // Sobra estimada (variáveis já incluem lazer R$600)
+  const sobraEst = rendaTotal - fixasTotal - VAR_EST;
+
+  // Cofrinhos
+  let casDeposit = 0, restante = 0, casaDeposit = 0, reservaDeposit = 0;
+  let bufferWarn = '';
+  if(mes.temCasamento){
+    const needed = plan.casamento || 2000;
+    if(sobraEst >= needed){
+      casDeposit = needed;
+      restante = sobraEst - needed;
+    } else if(sobraEst > 0){
+      casDeposit = sobraEst;
+      bufferWarn = `⚠️ Faltam ${fmt(needed - sobraEst)} para o casamento · usa buffer do mês anterior`;
+      restante = 0;
+    } else {
+      bufferWarn = `⚠️ Sobra negativa — usa buffer acumulado para o casamento`;
+    }
+  } else if(sobraEst > 0){
+    restante = sobraEst;
+  }
+  casaDeposit    = Math.round(restante * 0.70);
+  reservaDeposit = Math.round(restante * 0.30);
+
+  // Tag chips
+  const tagChip = t => {
+    if(!t) return '';
+    const styles = {
+      '🆕 novo':    'background:#dcfce7;color:#166534',
+      '✓ última':   'background:#dbeafe;color:#1d4ed8',
+      'único':      'background:#fef9c3;color:#854d0e',
+      'penúltima':  'background:#fff7ed;color:#9a3412',
+      '🌟 único':   'background:#fef3c7;color:#92400e',
+    };
+    const st = styles[t] || 'background:#f3f4f6;color:#374151';
+    return `<span style="font-size:9px;padding:1px 6px;border-radius:9px;${st};white-space:nowrap;margin-left:4px">${t}</span>`;
+  };
+
+  // Receita rows
+  const rendaBaseItems = [
+    { obs:'Emillyn BLF',                      cat:'Salário',  valor:2500,   dia:15 },
+    { obs:'Matheus BLF (líq.)',               cat:'Salário',  valor:2000,   dia:15 },
+    { obs:'Komprão',                           cat:'Publi',    valor:1833,   dia:29 },
+    { obs:'BC Paula',                          cat:'Mentoria', valor:87.90,  dia:15 },
+    { obs:'BC Daiane',                         cat:'Mentoria', valor:87.90,  dia:8  },
+    { obs:'BC Ana Karolina',                   cat:'Mentoria', valor:97.90,  dia:11 },
+    { obs:'Andressa — Mentoria Estrutura',     cat:'Mentoria', valor:550,    dia:25 },
+    { obs:'Panificadora Kelly (líq.)',         cat:'Publi',    valor:500,    dia:29 },
+  ];
+  const rendaRows = [...rendaBaseItems, ...(mes.rendaExtra||[])].map(r=>`
+    <tr>
+      <td>${r.obs}${tagChip(r.tag||'')}</td>
+      <td style="color:#888;font-size:11px">${r.cat}</td>
+      <td style="color:#aaa;font-size:11px;white-space:nowrap">${r.data || fmtDia(r.dia)}</td>
+      <td class="td-r amt-in">${fmt(r.valor)}</td>
+    </tr>`).join('');
+
+  // Fixas rows (base permanente + extras do mês)
+  const allFixas = [
+    ...FIXAS_BASE.map(f=>({...f,extra:false})),
+    ...(mes.fixasExtra||[]).map(f=>({...f,extra:true}))
+  ];
+  const fixasRows = allFixas.map(f=>`
+    <tr style="${f.extra?'background:#fafafa':''}">
+      <td>${f.obs}${tagChip(f.tag||'')}</td>
+      <td style="color:#888;font-size:11px">${f.cat}</td>
+      <td style="color:#aaa;font-size:11px;white-space:nowrap">${f.data || fmtDia(f.dia)}</td>
+      <td class="td-r amt-out">${fmt(f.valor)}</td>
+    </tr>`).join('');
+
+  const sobraClass = sobraEst >= 0 ? 'green' : 'red';
+
+  return `
+<div class="metrics">
+  <div class="metric"><div class="lbl">Receita est.</div><div class="val green">${fmt(rendaTotal)}</div></div>
+  <div class="metric"><div class="lbl">Fixas</div><div class="val red">${fmt(fixasTotal)}</div></div>
+  <div class="metric"><div class="lbl">Sobra est.</div><div class="val ${sobraClass}">${fmt(sobraEst)}</div></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Receita esperada · ${fmt(rendaTotal)}</div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Descrição</th><th>Categoria</th><th>Prev.</th><th class="td-r">Valor</th></tr></thead>
+    <tbody>${rendaRows}</tbody>
+    <tfoot><tr style="font-weight:700;border-top:2px solid #e5e7eb">
+      <td colspan="3">Total</td><td class="td-r amt-in">${fmt(rendaTotal)}</td>
+    </tr></tfoot>
+  </table></div>
+  <div class="nota">Variáveis estimadas em ${fmt(VAR_EST)} (inclui lazer ${fmt(LAZER)})</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Saídas Fixas · ${fmt(fixasTotal)}</div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Descrição</th><th>Categoria</th><th>Venc.</th><th class="td-r">Valor</th></tr></thead>
+    <tbody>${fixasRows}</tbody>
+    <tfoot><tr style="font-weight:700;border-top:2px solid #e5e7eb">
+      <td colspan="3">Total fixas</td><td class="td-r amt-out">${fmt(fixasTotal)}</td>
+    </tr></tfoot>
+  </table></div>
+</div>
+
+<div class="card" style="background:#f8f7ff;border:1px solid #e9d5ff">
+  <div class="card-title">Cofrinhos ${mes.label}</div>
+  ${bufferWarn?`<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px;margin-bottom:10px;font-size:12px;color:#9a3412">${bufferWarn}</div>`:''}
+  ${sobraEst<=0 && !mes.temCasamento
+    ?`<div style="background:#fef2f2;border-radius:8px;padding:10px;font-size:12px;color:#dc2626">⚠️ Mês de transição — sobra negativa (${fmt(sobraEst)}). Usa buffer acumulado dos meses anteriores.</div>`
+    :`<div class="alloc">
+    ${mes.temCasamento?`<div class="alloc-item" style="border-left:3px solid #7c6fff">
+      <div class="a-val purple">${fmt(casDeposit)}</div>
+      <div class="a-lbl">💍 Casamento</div>
+      <div class="a-pct">Total: ${fmt(plan.cumCasamento)}</div>
+    </div>`:''}
+    ${casaDeposit>0?`<div class="alloc-item" style="border-left:3px solid #22c55e">
+      <div class="a-val green">${fmt(casaDeposit)}</div>
+      <div class="a-lbl">🏠 Casa (70%)</div>
+      <div class="a-pct">Total: ${fmt(plan.cumCasa)}</div>
+    </div>`:''}
+    ${reservaDeposit>0?`<div class="alloc-item" style="border-left:3px solid #3b82f6">
+      <div class="a-val blue">${fmt(reservaDeposit)}</div>
+      <div class="a-lbl">🛡️ Reserva (30%)</div>
+      <div class="a-pct">Total: ${fmt(plan.cumReserva)}</div>
+    </div>`:''}
+    <div class="alloc-item" style="border-left:3px solid #f97316">
+      <div class="a-val orange">R$100</div>
+      <div class="a-lbl">🎉 Lazer Casal</div>
+      <div class="a-pct">pizzaria parceira</div>
+    </div>
+    <div class="alloc-item" style="border-left:3px solid #f97316">
+      <div class="a-val orange">R$300</div>
+      <div class="a-lbl">🎉 Lazer Família</div>
+      <div class="a-pct">incl. brinquedos e extras</div>
+    </div>
+  </div>`}
+</div>
+
+<div class="card" style="background:#fffbf0;border:1px solid #fed7aa">
+  <div class="card-title">Regra dos Extras</div>
+  <div class="nota" style="margin-bottom:10px">Qualquer entrada acima da receita base (MEI extra, projetos, BCs avulsas)</div>
+  <div class="alloc">
+    <div class="alloc-item"><div class="a-val green">50%</div><div class="a-lbl">Casa</div></div>
+    <div class="alloc-item"><div class="a-val blue">25%</div><div class="a-lbl">Reserva</div></div>
+    <div class="alloc-item"><div class="a-val purple">15%</div><div class="a-lbl">Casamento</div></div>
+    <div class="alloc-item"><div class="a-val orange">10%</div><div class="a-lbl">Lazer</div></div>
+  </div>
+</div>`;
+}
+
+// ─── SETEMBRO REAL ───────────────────────────────────────────────────────────
+
+// Saldo nos bancos em 01/09 (todas as contas somadas)
+const SET_SALDO_INICIAL = 1762.65; // saldo PF em 30/09
+
+const SET_ENT = [
+  { obs:'Komprão (set) — na minha PJ', cat:'Publi', valor:1833.35,status:'recebido' },
+  { obs:'Sabor & Cafe Kelly (publi)', cat:'Publi', valor:400, status:'recebido' },
+  { obs:'BC Andressa',         cat:'Internet',  valor:87.90,  status:'recebido' },
+  { obs:'BC Daiane',           cat:'Internet',  valor:87.90,  status:'recebido' },
+  { obs:'BC Ana Karolina',     cat:'Internet',  valor:97.90,  status:'recebido' },
+  { obs:'BC Paula',            cat:'Internet',  valor:87.90,  status:'recebido' },
+  { obs:'Aviamento (11/09)',   cat:'Cliente',   valor:600,    status:'recebido' },
+  { obs:'Emillyn BLF',         cat:'Salário',   valor:2000,   status:'recebido' },
+  { obs:'Matheus BLF (líq.)', cat:'Salário',   valor:1500,   status:'recebido' },
+  { obs:'Pacote Stories',      cat:'Cliente',   valor:600,    status:'recebido' },
+  { obs:'Venda Terreno (30/09)', cat:'Extra',  valor:2260.98,status:'recebido' },
+];
+
+const SET_SF = [
+  { id:'s0',  obs:'Cartão MP',           cat:'Dívida',      valor:100,    data:'01/09', prio:1, pago:true },
+  { id:'s1',  obs:'Cartão Inter',        cat:'Dívida',      valor:122,    data:'01/09', prio:1, pago:true },
+  { id:'s25', obs:'Internet (ago — atrasado)',       cat:'Casa',   valor:169,    data:'01/09', prio:1, pago:true },
+  { id:'s24', obs:'Inglês Pierre (ago — atrasado)', cat:'Filhos', valor:285,    data:'01/09', prio:1, pago:true },
+  { id:'s3',  obs:'Contabilidade',       cat:'Trabalho',    valor:100,    data:'03/09', prio:1, pago:true },
+  { id:'s4',  obs:'Serasa Ailos 2/6',    cat:'Dívida',      valor:31.73,  data:'04/09', prio:1, pago:true },
+  { id:'s5',  obs:'Escova 3/6',          cat:'Autocuidado', valor:41,     data:'04/09', prio:1, pago:true },
+  { id:'s8',  obs:'Empréstimo pai (incl. carrinho+cadeira)', cat:'Crédito', valor:777.90, data:'10/09', prio:2, pago:true },
+  { id:'s10', obs:'iFood',               cat:'Assinatura',  valor:7.95,   data:'10/09', prio:2, pago:true },
+  { id:'s11', obs:'Streaming (única mantida)', cat:'Assinatura', valor:30, data:'10/09', prio:2, pago:true },
+  { id:'s2',  obs:'Claude',              cat:'Trabalho',    valor:110,    data:'13/09', prio:2, pago:true },
+  { id:'s27', obs:'DAS MEI (set)',        cat:'Trabalho',    valor:50.59,  data:'12/09', prio:2, pago:true },
+  { id:'s22', obs:'Plano celular',        cat:'Trabalho',    valor:40,     data:'13/09', prio:2, pago:true },
+  { id:'s13', obs:'Multa Duque 8/10',    cat:'Dívida',      valor:151.80, data:'15/09', prio:2, pago:true },
+  { id:'s14', obs:'Seguro vida',         cat:'Autocuidado', valor:17,     data:'15/09', prio:2, pago:true },
+  { id:'s15', obs:'Apple Memória (iCloud 2TB)', cat:'Trabalho', valor:65.90, data:'26/09', prio:2, pago:true },
+  { id:'s16', obs:'CapCut',              cat:'Trabalho',    valor:35,     data:'21/09', prio:2, pago:true },
+  { id:'s17', obs:'IR Juros 2025 2/3',   cat:'Dívida',      valor:200,    data:'17/09', prio:2, pago:true },
+  { id:'s18', obs:'Canva',               cat:'Trabalho',    valor:33,     data:'20/09', prio:3, pago:true },
+  { id:'s19', obs:'Aluguel (pago pelo Matheus)', cat:'Casa', valor:1000,   data:'21/09', prio:3, pago:true },
+  { id:'s20', obs:'Internet',            cat:'Casa',        valor:170,    data:'22/09', prio:3, pago:true },
+  { id:'s21', obs:'Faculdade (sem juros até 15/10)', cat:'Faculdade', valor:110, data:'22/09', prio:3 },
+  { id:'s23', obs:'Inglês Pierre (sem juros até 20/10)', cat:'Filhos', valor:285, data:'25/09', prio:3 },
+  { id:'s28', obs:'Carro Matheus 3/5+4/5 — pagar junto 25/10 (R$400)', cat:'Dívida', valor:200, data:'30/09', prio:3 },
+];
+
+const SET_SV = [
+  { obs:'Mercado/Alimentação',  cat:'Alimentação', valor:1791.33 }, // +R$297,25 conta Matheus
+  { obs:'Casa (Lojão 2x)',      cat:'Casa',        valor:144.86 },
+  { obs:'Gasolina',             cat:'Transporte',  valor:611.94 }, // +R$167,96 conta Matheus
+  { obs:'Lazer Família (incl. Amor&Canela+Primos Beer)', cat:'Lazer', valor:361.97 },
+  { obs:'Vestuário (brechó)',   cat:'Vestuário',   valor:155    },
+  { obs:'Imersão posicionamento (Hotmart)', cat:'Investimento', valor:47 },
+  { obs:'Cinema aniv. irmã (ingresso + lanche)', cat:'Presente', valor:64.74 },
+  { obs:'A analisar (Theo+Daniel+Tuna+Agro)', cat:'⚠️ Analisar', valor:198.86 },
+  { obs:'Lazer Casal (Sushi)',  cat:'Lazer',       valor:75.98  },
+  { obs:'Amazon Digital',       cat:'Assinatura',  valor:44.80  },
+  { obs:'Shopee (set — incl. fantasia Peter)', cat:'Compras', valor:490.86 },
+  { obs:'Filhos (brinquedos+babá+escola+bike Peter)', cat:'Filhos', valor:577.95 }, // +R$70 bike Peter + R$20 Mundo da Criança
+  { obs:'Farmácia/Saúde',       cat:'Saúde',        valor:284.09 }, // +R$11,99 Farm.Super Popular (Matheus)
+  { obs:'Café',                 cat:'Alimentação', valor:51.40  }, // +R$27,50 Best Coffee (25/09)
+  { obs:'Amazon Prime (esquecer cancelar)', cat:'Assinatura', valor:19.90 }, // 25/09
+  { obs:'Presente padrasto (Cor e Art)',    cat:'Presente',   valor:27.00 }, // 18/09
+  { obs:'Outros (ímã+livro+compras set)', cat:'Outros', valor:50.98 },
+  { obs:'A analisar (Matheus — P Sonho+JIM+King Tudo+misc)', cat:'⚠️ Analisar', valor:158 },
+  { obs:'Brinquedo (meninos)',    cat:'Filhos',      valor:100    },
+  { obs:'Mercado (30/09)',        cat:'Alimentação', valor:127.92 },
+  { obs:'Agropecuária',           cat:'Casa',        valor:55     },
+  { obs:'Gasolina (30/09)',       cat:'Transporte',  valor:50     },
+];
+
+// ─── OUTUBRO 2026 ────────────────────────────────────────────────────────────
+const OUT_SALDO_INICIAL = 4124.48; // saldo total (PF 2291.13 + PJ 1833.35) em 01/10
+
+const OUT_ENT = [
+  { obs:'BC Daiane',                       cat:'Internet', valor:87.90,  data:'08/10', status:'a-receber' },
+  { obs:'BC Ana Karolina',                 cat:'Internet', valor:97.90,  data:'11/10', status:'a-receber' },
+  { obs:'Emillyn BLF',                     cat:'Salário',  valor:2500,   data:'15/10', status:'a-receber' },
+  { obs:'Matheus BLF (líq.)',              cat:'Salário',  valor:2000,   data:'15/10', status:'a-receber' },
+  { obs:'BC Paula',                        cat:'Internet', valor:87.90,  data:'15/10', status:'a-receber' },
+  { obs:'Andressa Mentoria Estrutura 1/12',cat:'Mentoria', valor:550,    data:'25/10', status:'a-receber' },
+  { obs:'Komprão (out) — na minha PJ',    cat:'Publi',    valor:1833.35,data:'29/10', status:'a-receber' },
+  { obs:'Panificadora Kelly 1ª',           cat:'Publi',    valor:500,    data:'29/10', status:'a-receber' },
+];
+
+const OUT_SF = [
+  { id:'o0',  obs:'Câmera traseira (conserto)',           cat:'Trabalho',    valor:150,    data:'01/10', prio:1, pago:true },
+  { id:'o33', obs:'Câmera frontal (conserto)',            cat:'Trabalho',    valor:590,    data:'01/10', prio:1 },
+  { id:'o34', obs:'Mercado + fralda',                   cat:'Casa',        valor:1200,   data:'05/10', prio:2 },
+  { id:'o35', obs:'Gasolina',                           cat:'Casa',        valor:150,    data:'05/10', prio:2 },
+  { id:'o36', obs:'Gasolina',                           cat:'Casa',        valor:150,    data:'15/10', prio:2 },
+  { id:'o37', obs:'Gasolina',                           cat:'Casa',        valor:150,    data:'25/10', prio:2 },
+  { id:'o1',  obs:'Cartão MP',                            cat:'Dívida',      valor:100,    data:'01/10', prio:1 },
+  { id:'o2',  obs:'Cartão Inter',                         cat:'Dívida',      valor:110,    data:'01/10', prio:1 },
+  { id:'o3',  obs:'Progressiva casamento 💍',             cat:'Autocuidado', valor:260,    data:'05/10', prio:1, pago:true },
+  { id:'o4',  obs:'Tintura casamento 💍',                 cat:'Autocuidado', valor:115,    data:'05/10', prio:1, pago:true },
+  { id:'o5',  obs:'Contabilidade',                        cat:'Trabalho',    valor:100,    data:'03/10', prio:1 },
+  { id:'o6',  obs:'Serasa Ailos 3/6',                     cat:'Dívida',      valor:31.73,  data:'04/10', prio:1, pago:true },
+  { id:'o7',  obs:'Escova 4/6',                           cat:'Autocuidado', valor:41,     data:'04/10', prio:2 },
+  { id:'o8',  obs:'iFood',                                cat:'Assinatura',  valor:7.95,   data:'10/10', prio:2 },
+  { id:'o9',  obs:'Streaming',                            cat:'Assinatura',  valor:30,     data:'10/10', prio:2 },
+  { id:'o10', obs:'Emp. pai: carrinho 12/12 (última)',    cat:'Crédito',     valor:35,     data:'10/10', prio:2 },
+  { id:'o11', obs:'Emp. pai: cadeira 12/12 (última)',     cat:'Crédito',     valor:44,     data:'10/10', prio:2 },
+  { id:'o12', obs:'Emp. pai: cartão 6/13',                cat:'Crédito',     valor:189.32, data:'10/10', prio:2 },
+  { id:'o13', obs:'Emp. pai: Lucradiva 2/12',             cat:'Crédito',     valor:100,    data:'10/10', prio:2 },
+  { id:'o14', obs:'Emp. pai: BLF 3/9',                    cat:'Crédito',     valor:211.11, data:'10/10', prio:2 },
+  { id:'o15', obs:'DAS MEI (out)',                         cat:'Trabalho',    valor:50.59,  data:'12/10', prio:2 },
+  { id:'o16', obs:'Claude IA',                            cat:'Trabalho',    valor:110,    data:'13/10', prio:2 },
+  { id:'o17', obs:'Plano celular',                        cat:'Trabalho',    valor:40,     data:'13/10', prio:2 },
+  { id:'o18', obs:'Faculdade (pagar logo — mudança de curso)',cat:'Faculdade', valor:250,    data:'03/10', prio:1 },
+  { id:'o19', obs:'Multa Duque 9/10',                     cat:'Dívida',      valor:151.80, data:'15/10', prio:2 },
+  { id:'o20', obs:'Seguro vida',                          cat:'Saúde',       valor:17,     data:'15/10', prio:2 },
+  { id:'o21', obs:'IR Juros 2025 3/3 (última)',           cat:'Dívida',      valor:200,    data:'17/10', prio:2 },
+  { id:'o22', obs:'DAS atrasado 2/8',                     cat:'Dívida',      valor:100,    data:'17/10', prio:2 },
+  { id:'o23', obs:'Inglês Pierre set (sem juros até 20/10)',cat:'Filhos',    valor:285,    data:'20/10', prio:2 },
+  { id:'o24', obs:'CapCut',                               cat:'Trabalho',    valor:35,     data:'21/10', prio:3 },
+  { id:'o25', obs:'Aluguel',                              cat:'Casa',        valor:1000,   data:'21/10', prio:3 },
+  { id:'o26', obs:'Internet',                             cat:'Casa',        valor:170,    data:'22/10', prio:3 },
+  { id:'o27', obs:'Carro Matheus',                        cat:'Dívida',      valor:2000,   data:'21/10', prio:2 },
+  { id:'o28', obs:'Inglês Pierre out',                    cat:'Filhos',      valor:285,    data:'25/10', prio:3 },
+  { id:'o29', obs:'Casamento 💍 1/2 (pagar até 31/10)',  cat:'Casamento',   valor:2000,   data:'31/10', prio:1 },
+  { id:'o30', obs:'iCloud 2TB',                           cat:'Trabalho',    valor:65.90,  data:'26/10', prio:3 },
+  { id:'o31', obs:'Matheus — Itaú (limpou nome)',         cat:'Dívida',      valor:152,    data:'01/10', prio:1, pago:true },
+  { id:'o32', obs:'Marisa parcelamento 1/8',              cat:'Dívida',      valor:144.35, data:'01/10', prio:1, pago:true },
+];
+
+const MOTIV = [
+  'Cada real guardado hoje é um tijolo da sua casa nova. 🏠',
+  'Vocês escolheram o futuro acima do impulso. Isso é força de casal! 💪',
+  'A disciplina de hoje é a liberdade de amanhã. Orgulho de vocês! 💜',
+  'Um "não" agora = um "sim" maior no futuro. Bora, casal!',
+  'Família unida que cuida do dinheiro junto conquista junto. 🏡',
+  'O casamento vai ser lindo e a casa própria vai acontecer. Foco! ✨',
+  'Matheus e Emillyn construindo sonhos um real de cada vez. 💕',
+];
+
+function getPago(id){
+  try{
+    const stored = localStorage.getItem('set_'+id);
+    if(stored !== null) return stored==='1';
+    return SET_SF.find(s=>s.id===id)?.pago === true;
+  }catch(e){ return SET_SF.find(s=>s.id===id)?.pago === true; }
+}
+function togglePago(id){
+  try{ localStorage.setItem('set_'+id, getPago(id)?'0':'1'); }catch(e){}
+  renderSetembro();
+}
+
+function buildSetembro(){
+  const today = new Date();
+  const entRec = SET_ENT.filter(e=>e.status==='recebido').reduce((s,e)=>s+e.valor,0);
+  const entTot = SET_ENT.reduce((s,e)=>s+e.valor,0);
+  const sfPago = SET_SF.filter(e=>getPago(e.id)).reduce((s,e)=>s+e.valor,0);
+  const sfPend = SET_SF.filter(e=>!getPago(e.id)).reduce((s,e)=>s+e.valor,0);
+  const svTot  = SET_SV.reduce((s,e)=>s+e.valor,0);
+  const fluxo     = entRec - sfPago - svTot;
+  const saldoReal = SET_SALDO_INICIAL + fluxo;
+
+  const sfRows = SET_SF.map(s=>{
+    const pago = getPago(s.id);
+    const [d,m] = s.data.split('/').map(Number);
+    const due = new Date(2026, m-1, d);
+    const overdue = !pago && due < today;
+    const statusTxt = pago?'✓ Pago':overdue?'Atrasado':'No prazo';
+    const statusCls = pago?'b-pago':overdue?'b-nao-pago':'b-pendente';
+    return `<tr style="${pago?'opacity:.45':''}">
+      <td>${s.obs}</td><td style="color:#aaa;font-size:11px">${s.cat}</td>
+      <td class="td-r ${pago?'':'amt-out'}">${fmt(s.valor)}</td>
+      <td style="color:#aaa;font-size:11px">${s.data}</td>
+      <td><span class="badge ${statusCls}" style="cursor:pointer;user-select:none" onclick="togglePago('${s.id}')">${statusTxt}</span></td>
+    </tr>`;
+  }).join('');
+
+  const entRows = SET_ENT.map(e=>`
+    <tr>
+      <td>${e.obs}</td><td style="color:#aaa;font-size:11px">${e.cat}</td>
+      <td class="td-r amt-in">${fmt(e.valor)}</td>
+      <td><span class="badge ${e.status==='recebido'?'b-pago':'b-planejado'}">${e.status==='recebido'?'✓ Recebido':'A receber'}</span></td>
+    </tr>`).join('');
+
+  const svRows = SET_SV.map(s=>`
+    <tr><td>${s.obs}</td><td style="color:#aaa;font-size:11px">${s.cat}</td><td class="td-r amt-out">${fmt(s.valor)}</td></tr>`).join('');
+
+  return `
+<div class="metrics">
+  <div class="metric"><div class="lbl">Recebido</div><div class="val green">${fmt(entRec)}</div></div>
+  <div class="metric"><div class="lbl">A receber</div><div class="val blue">${fmt(entTot-entRec)}</div></div>
+  <div class="metric"><div class="lbl">💰 Saldo em conta</div><div class="val ${saldoReal>=0?'green':'red'}">${fmt(saldoReal)}</div></div>
+</div>
+
+<div class="card" style="border:2px solid #7c6fff">
+  <div class="card-title">💰 O que pagar agora?</div>
+  <p style="font-size:12px;color:#888;margin-bottom:10px">Digite quanto você tem disponível no banco/celular:</p>
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">
+    <span style="font-size:15px;font-weight:700;color:#555">R$</span>
+    <input id="saldo-input" type="number" inputmode="decimal" placeholder="0,00" style="flex:1;border:1.5px solid #e0e0e8;border-radius:10px;padding:10px 12px;font-size:16px;outline:none;font-weight:700" oninput="calcPagar()">
+  </div>
+  <div id="pagar-result" style="margin-top:12px"></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Entradas setembro · Total ${fmt(entTot)}</div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Item</th><th>Cat.</th><th class="td-r">Valor</th><th>Status</th></tr></thead>
+    <tbody>${entRows}</tbody>
+  </table></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Saídas Fixas · <span class="green">${fmt(sfPago)} pago</span> · <span style="color:#aaa">${fmt(sfPend)} pendente</span></div>
+  <div class="nota" style="margin-bottom:10px">👆 Toque no status para marcar como pago</div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Descrição</th><th>Cat.</th><th class="td-r">Valor</th><th>Vence</th><th>Status</th></tr></thead>
+    <tbody>${sfRows}</tbody>
+  </table></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Saídas Variáveis · ${fmt(svTot)} <span style="color:#aaa;font-size:10px">(até 16/09)</span></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Descrição</th><th>Cat.</th><th class="td-r">Valor</th></tr></thead>
+    <tbody>${svRows}</tbody>
+  </table></div>
+  <div class="nota">🎭 Lazer casal: R$75,98 usado → R$124,02 restante · Lazer família: R$196 usado → R$204 restante · Lucradiva: 12x no cartão do pai (~R$83/mês)</div>
+</div>
+
+<div class="card" style="border-left:4px solid #22c55e">
+  <div class="card-title">🏠 Cofrinho Casa · meta mensal R$1.250</div>
+  <div class="metrics">
+    <div class="metric"><div class="lbl">Meta mês</div><div class="val green">${fmt(1250)}</div></div>
+    <div class="metric"><div class="lbl">Guardado</div><div class="val" style="color:#aaa">${fmt(0)}</div></div>
+    <div class="metric"><div class="lbl">Falta guardar</div><div class="val red">${fmt(1250)}</div></div>
+  </div>
+  <div class="nota">Meta total: R$10.000 · Acumulado geral: R$0</div>
+</div>
+
+<div class="card" style="border-left:4px solid #3b82f6">
+  <div class="card-title">🛡️ Cofrinho Reserva · meta mensal R$535</div>
+  <div class="metrics">
+    <div class="metric"><div class="lbl">Meta mês</div><div class="val blue">${fmt(535)}</div></div>
+    <div class="metric"><div class="lbl">Guardado</div><div class="val" style="color:#aaa">${fmt(0)}</div></div>
+    <div class="metric"><div class="lbl">Falta guardar</div><div class="val red">${fmt(535)}</div></div>
+  </div>
+  <div class="nota">Meta total: R$6.000 · Acumulado geral: R$0</div>
+</div>
+
+<div class="card" style="border-left:4px solid #7c6fff">
+  <div class="card-title">💍 Cofrinho Casamento · meta mensal R$2.000</div>
+  <div class="metrics">
+    <div class="metric"><div class="lbl">Meta mês</div><div class="val purple">${fmt(2000)}</div></div>
+    <div class="metric"><div class="lbl">Guardado</div><div class="val" style="color:#aaa">${fmt(0)}</div></div>
+    <div class="metric"><div class="lbl">Falta no total</div><div class="val">${fmt(4000)}</div></div>
+  </div>
+  <div class="nota">Meta total: R$4.000 · Out e Nov/26 (R$2.000/mês)</div>
+</div>`;
+}
+
+function calcPagar(){
+  const saldo = parseFloat(document.getElementById('saldo-input').value)||0;
+  const res = document.getElementById('pagar-result');
+  if(saldo<=0){res.innerHTML='';return;}
+  const nao_pago = SET_SF.filter(s=>!getPago(s.id)).sort((a,b)=>a.prio-b.prio||(a.data.localeCompare(b.data)));
+  let resto=saldo, pagar=[], semSaldo=[];
+  for(const s of nao_pago){
+    if(resto>=s.valor){pagar.push(s);resto-=s.valor;}
+    else{semSaldo.push(s);}
+  }
+  const podeCas=Math.min(2000,resto);
+  const apos=resto-podeCas;
+  const podeCasa=Math.round(apos*0.70);
+  const podeRes=Math.round(apos*0.30);
+  const mot=MOTIV[Math.floor(Math.random()*MOTIV.length)];
+  res.innerHTML=`
+    ${pagar.length?`<div style="margin-bottom:10px">${pagar.map(s=>`
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5;font-size:13px">
+        <span>✅ ${s.obs} <span style="color:#aaa;font-size:10px">(${s.data})</span></span>
+        <span style="color:#dc2626;font-weight:600">${fmt(s.valor)}</span>
+      </div>`).join('')}</div>`:''}
+    ${semSaldo.length?`<div style="background:#fff9f9;border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px;color:#aaa">
+      ⚠️ Saldo insuficiente para: ${semSaldo.map(s=>s.obs).join(', ')}
+    </div>`:''}
+    ${resto>0?`<div style="background:#f0fdf4;border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="font-size:12px;color:#555;font-weight:600;margin-bottom:8px">Com o restante ${fmt(resto)}:</div>
+      ${podeCas>0?`<div style="font-size:13px;margin-bottom:5px">💍 Casamento cofrinho: <strong style="color:#7c6fff">${fmt(podeCas)}</strong></div>`:''}
+      ${podeCasa>0?`<div style="font-size:13px;margin-bottom:5px">🏠 Casa (70%): <strong style="color:#22c55e">${fmt(podeCasa)}</strong></div>`:''}
+      ${podeRes>0?`<div style="font-size:13px">🛡️ Reserva (30%): <strong style="color:#3b82f6">${fmt(podeRes)}</strong></div>`:''}
+    </div>`:''}
+    <div style="background:linear-gradient(135deg,#1a1a2e,#2d1b69);color:#fff;border-radius:12px;padding:14px;text-align:center;font-size:13px;line-height:1.6;font-style:italic">
+      💜 ${mot}
+    </div>`;
+}
+
+function renderSetembro(){
+  const el=document.getElementById('page-set26');
+  if(el) el.innerHTML='<div class="sec">Setembro 2026 — Em andamento</div>'+buildSetembro()+'<div class="footer">👆 Toque no status para marcar pago · salvo no celular · '+new Date().toLocaleDateString('pt-BR')+'</div>';
+}
+
+function getPagoEnt(idx){
+  try{ const s=localStorage.getItem('oent_'+idx); if(s!==null) return s==='1'; }catch(e){}
+  return OUT_ENT[idx]?.status==='recebido';
+}
+function togglePagoEnt(idx){
+  try{ localStorage.setItem('oent_'+idx, getPagoEnt(idx)?'0':'1'); }catch(e){}
+  renderOutubro();
+}
+
+function getPagoOut(id){
+  try{ const s=localStorage.getItem('out_'+id); if(s!==null) return s==='1'; }catch(e){}
+  return OUT_SF.find(s=>s.id===id)?.pago===true;
+}
+function togglePagoOut(id){
+  try{ localStorage.setItem('out_'+id, getPagoOut(id)?'0':'1'); }catch(e){}
+  renderOutubro();
+}
+
+function buildFasesOut(){
+  const toD = s => { const [d,m] = s.split('/').map(Number); return new Date(2026, m-1, d); };
+  const fases = [
+    { label:'Fase 1', sub:'01–14/out · pré-BLF',    s:'01/10', e:'14/10' },
+    { label:'Fase 2', sub:'15–20/out · BLF 💸',      s:'15/10', e:'20/10' },
+    { label:'Fase 3', sub:'21–28/out',               s:'21/10', e:'28/10' },
+    { label:'Fase 4', sub:'29–31/out · Komprão 🎉',  s:'29/10', e:'31/10' },
+  ];
+  let projBal = OUT_SALDO_INICIAL;
+  const cards = fases.map(f => {
+    const s = toD(f.s), e = toD(f.e);
+    const entItems = OUT_ENT.map((x,i)=>({...x,idx:i})).filter(x=>{ const d=toD(x.data); return d>=s&&d<=e; });
+    const saiItems = OUT_SF.filter(x=>{ const d=toD(x.data); return d>=s&&d<=e; });
+    const entTot = entItems.reduce((a,x)=>a+x.valor,0);
+    const saiTot = saiItems.reduce((a,x)=>a+x.valor,0);
+    projBal += entTot - saiTot;
+    const ok = projBal >= 0;
+
+    const entList = entItems.map(x=>{
+      const rec = getPagoEnt(x.idx);
+      return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1e1e1e;cursor:pointer" onclick="togglePagoEnt(${x.idx})">
+        <span style="font-size:15px;flex-shrink:0">${rec?'✅':'⬜'}</span>
+        <div style="flex:1">
+          <div style="font-size:12px;color:${rec?'#666':'#ccc'};${rec?'text-decoration:line-through':''}">${x.obs}</div>
+          <div style="font-size:10px;color:#555">${x.data}</div>
+        </div>
+        <span style="font-size:12px;color:${rec?'#555':'#4caf50'};flex-shrink:0">${rec?'✓ ':'+'}${fmt(x.valor)}</span>
+      </div>`;
+    }).join('');
+
+    const saiList = saiItems.map(x=>{
+      const pago = getPagoOut(x.id);
+      return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1e1e1e;cursor:pointer" onclick="togglePagoOut('${x.id}')">
+        <span style="font-size:15px;flex-shrink:0">${pago?'✅':'⬜'}</span>
+        <div style="flex:1">
+          <div style="font-size:12px;color:${pago?'#666':'#ccc'};${pago?'text-decoration:line-through':''}">${x.obs}</div>
+          <div style="font-size:10px;color:#555">${x.data}</div>
+        </div>
+        <span style="font-size:12px;color:${pago?'#555':'#e57373'};flex-shrink:0">${pago?'✓ ':'−'}${fmt(x.valor)}</span>
+      </div>`;
+    }).join('');
+
+    return `<div style="border:1px solid #2a2a2a;border-radius:10px;padding:12px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div><b style="font-size:13px">${f.label}</b>&nbsp;<span style="color:#aaa;font-size:11px">${f.sub}</span></div>
+        <div style="font-size:14px;font-weight:700;color:${ok?'#4caf50':'#e57373'}">${fmt(projBal)}</div>
+      </div>
+      ${entItems.length?`<div style="margin-bottom:8px"><div style="font-size:10px;color:#4caf50;letter-spacing:1px;margin-bottom:4px">▲ ENTRADAS</div>${entList}</div>`:''}
+      ${saiItems.length?`<div><div style="font-size:10px;color:#e57373;letter-spacing:1px;margin-bottom:4px;margin-top:${entItems.length?'8px':'0'}">▼ SAÍDAS</div>${saiList}</div>`:''}
+    </div>`;
+  }).join('');
+  return `<div class="card">
+    <div class="card-title">📅 Fluxo por fase · toque para dar check</div>
+    <div class="nota" style="margin-bottom:10px">Saldo projetado ao final de cada fase · ✅ = confirmado</div>
+    ${cards}
+  </div>`;
+}
+
+function buildOutubro(){
+  const today = new Date();
+  const entRec = OUT_ENT.filter(e=>e.status==='recebido').reduce((s,e)=>s+e.valor,0);
+  const entTot = OUT_ENT.reduce((s,e)=>s+e.valor,0);
+  const sfPago = OUT_SF.filter(e=>getPagoOut(e.id)).reduce((s,e)=>s+e.valor,0);
+  const sfPend = OUT_SF.filter(e=>!getPagoOut(e.id)).reduce((s,e)=>s+e.valor,0);
+  const saldoReal = OUT_SALDO_INICIAL + entRec - sfPago;
+
+  const sfRows = OUT_SF.map(s=>{
+    const pago = getPagoOut(s.id);
+    const [d,m] = s.data.split('/').map(Number);
+    const due = new Date(2026, m-1, d);
+    const overdue = !pago && due < today;
+    const statusTxt = pago?'✓ Pago':overdue?'Atrasado':'No prazo';
+    const statusCls = pago?'b-pago':overdue?'b-nao-pago':'b-pendente';
+    return `<tr style="${pago?'opacity:.45':''}">
+      <td>${s.obs}</td><td style="color:#aaa;font-size:11px">${s.cat}</td>
+      <td class="td-r ${pago?'':'amt-out'}">${fmt(s.valor)}</td>
+      <td style="color:#aaa;font-size:11px">${s.data}</td>
+      <td><span class="badge ${statusCls}" style="cursor:pointer;user-select:none" onclick="togglePagoOut('${s.id}')">${statusTxt}</span></td>
+    </tr>`;
+  }).join('');
+
+  const entRows = OUT_ENT.map(e=>`
+    <tr>
+      <td>${e.obs}</td><td style="color:#aaa;font-size:11px">${e.cat}</td>
+      <td class="td-r amt-in">${fmt(e.valor)}</td>
+      <td style="color:#aaa;font-size:11px">${e.data}</td>
+      <td><span class="badge ${e.status==='recebido'?'b-pago':'b-planejado'}">${e.status==='recebido'?'✓ Recebido':'A receber'}</span></td>
+    </tr>`).join('');
+
+  return `
+<div class="metrics">
+  <div class="metric"><div class="lbl">Recebido</div><div class="val green">${fmt(entRec)}</div></div>
+  <div class="metric"><div class="lbl">A receber</div><div class="val blue">${fmt(entTot-entRec)}</div></div>
+  <div class="metric"><div class="lbl">💰 Saldo Total</div><div class="val ${saldoReal>=0?'green':'red'}">${fmt(saldoReal)}</div></div>
+</div>
+
+${buildFasesOut()}
+
+<div class="card">
+  <div class="card-title">Entradas Outubro · Total ${fmt(entTot)}</div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Item</th><th>Cat.</th><th class="td-r">Valor</th><th>Prev.</th><th>Status</th></tr></thead>
+    <tbody>${entRows}</tbody>
+  </table></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Saídas Fixas · <span class="green">${fmt(sfPago)} pago</span> · <span style="color:#aaa">${fmt(sfPend)} pendente</span></div>
+  <div class="nota" style="margin-bottom:10px">👆 Toque no status para marcar como pago</div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Descrição</th><th>Cat.</th><th class="td-r">Valor</th><th>Vence</th><th>Status</th></tr></thead>
+    <tbody>${sfRows}</tbody>
+  </table></div>
+</div>`;
+}
+
+function renderOutubro(){
+  const el=document.getElementById('page-out26');
+  if(el) el.innerHTML='<div class="sec">Outubro 2026 — Em andamento</div>'+buildOutubro()+'<div class="footer">👆 Toque no status para marcar pago · salvo no celular · '+new Date().toLocaleDateString('pt-BR')+'</div>';
+}
+
+// ─── MONTAR PÁGINAS ───────────────────────────────────────────────────────────
+
+const pagesDiv = document.getElementById('pages');
+
+pagesDiv.innerHTML += `<div class="page active" id="page-geral">${buildGeral()}<div class="footer">Atualizado em ${new Date().toLocaleDateString('pt-BR')} · Emillyn & Matheus 💜</div></div>`;
+
+pagesDiv.innerHTML += `<div class="page" id="page-ago26"><div class="sec">Agosto 2026 — Dados Reais</div>${buildAgosto()}<div class="footer">Planilha em atualização — alguns variáveis ainda não registrados</div></div>`;
+
+pagesDiv.innerHTML += `<div class="page" id="page-set26"></div>`;
+pagesDiv.innerHTML += `<div class="page" id="page-out26"></div>`;
+
+mesesPlan.slice(1).forEach((mes,i)=>{
+  pagesDiv.innerHTML += `<div class="page" id="page-${mes.id}"><div class="sec">${mes.label} — Planejado</div>${buildPlanMes(mes,i+1)}<div class="footer">Projeção com receita base. Extras aplicam Regra dos Extras.</div></div>`;
+});
+
+renderSetembro();
+renderOutubro();
+// ─── CHAT ────────────────────────────────────────────────────────────────────
+const SYS = `Você é o assistente financeiro do casal Emillyn e Matheus. Responda SEMPRE em português, de forma direta e amigável. Máximo 4 frases curtas.
+
+SETEMBRO 2026 (atualizado 16/09):
+- Recebido até agora: Komprão 2x R$3.666 + BC Andressa R$87 + BC Daiane R$87,90 + Aviamento R$600 = R$4.440,90
+- A receber: BC restante R$87 + Emillyn BLF R$2.500 + Matheus BLF R$2.000 + Pacote Stories R$600 = R$5.187
+- Fixos pagos: R$1.659,63 | Fixos pendentes: R$1.838 (IR R$200 + Canva R$33 + Aluguel R$1.000 + Internet R$170 + Faculdade R$110 + Celular R$40 + Pierre set R$285)
+- Variáveis até 16/09: R$2.990,01 (incl. Lucradiva R$997 no cartão do pai)
+
+LAZER DISPONÍVEL:
+- Casal: R$124,02 restantes (de R$200/mês)
+- Família: R$204 restantes (de R$400/mês)
+
+COFRINHOS: Set/26 sem depósito · Out+Nov: Casamento R$2.000/mês (total R$4.000) · Dez em diante: Casa + Reserva
+META: Casa própria R$10.000 (mai/27) · Casamento R$4.000 (22/11/26)
+
+DÍVIDAS ATIVAS: IR Juros 2025 R$200 (17/09) + Multa Duque (parcela mensal R$151,80) + empréstimo pai ~R$268/mês dez/26-jan/27 depois R$189/mês
+
+Quando perguntarem sobre compra: responda com ✅ SIM, ❌ NÃO ou ⏳ ESPERA e explique em 2-3 frases. Verifique se cabe no lazer ou impacta o cofrinho.`;
+
+let hist=[], chatOpen=false;
+
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chatPanel').classList.toggle('open',chatOpen);
+  if(chatOpen && hist.length===0) initChat();
+}
+
+function initChat(){
+  if(localStorage.getItem('ant_key')) { showUI(); greet(); }
+  else showSetup();
+}
+
+function showSetup(){
+  document.getElementById('chatMsgs').innerHTML=`
+  <div style="padding:16px;text-align:center">
+    <div style="font-size:32px;margin-bottom:10px">🔑</div>
+    <p style="font-size:13px;color:#555;margin-bottom:12px;line-height:1.5">Para usar o chat, insira sua chave da API Anthropic.<br>Fica salva só no seu celular.</p>
+    <input id="akey" type="password" placeholder="sk-ant-..." style="width:100%;border:1.5px solid #e0e0e8;border-radius:10px;padding:10px;font-size:12px;margin-bottom:10px;font-family:monospace;outline:none;box-sizing:border-box">
+    <button onclick="saveKey()" style="background:#7c6fff;color:#fff;border:none;border-radius:10px;padding:10px 20px;width:100%;cursor:pointer;font-size:13px;font-weight:700">Salvar e começar</button>
+    <div style="font-size:10px;color:#aaa;margin-top:8px">Obtenha em console.anthropic.com → API Keys</div>
+  </div>`;
+}
+
+function saveKey(){
+  const k=document.getElementById('akey').value.trim();
+  if(!k.startsWith('sk-ant-')){alert('Chave inválida — deve começar com sk-ant-');return;}
+  localStorage.setItem('ant_key',k);
+  document.getElementById('chatMsgs').innerHTML='';
+  showUI(); greet();
+}
+
+function showUI(){ document.getElementById('chatBar').style.display='flex'; }
+
+function greet(){ addMsg('assistant','Oi! 💜 Pode perguntar à vontade — ex: "quero comprar X que custa R$200, é boa ideia?"'); }
+
+function addMsg(role,text){
+  const d=document.getElementById('chatMsgs');
+  const m=document.createElement('div');
+  m.className='msg '+role;
+  m.textContent=text;
+  d.appendChild(m);
+  d.scrollTop=d.scrollHeight;
+  return m;
+}
+
+async function send(){
+  const inp=document.getElementById('cinput');
+  const txt=inp.value.trim();
+  if(!txt) return;
+  const key=localStorage.getItem('ant_key');
+  if(!key){showSetup();return;}
+  inp.value=''; inp.style.height='auto';
+  addMsg('user',txt);
+  hist.push({role:'user',content:txt});
+  document.getElementById('csend').disabled=true;
+  const lm=addMsg('assistant','...');
+  lm.style.color='#aaa';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'x-api-key':key,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:SYS,messages:hist})
+    });
+    if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'Erro');}
+    const j=await r.json();
+    const rep=j.content[0].text;
+    lm.textContent=rep; lm.style.color='';
+    hist.push({role:'assistant',content:rep});
+  }catch(e){lm.textContent='❌ '+e.message;lm.style.color='#dc2626';}
+  document.getElementById('csend').disabled=false;
+}
+
+function hkey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
+function arz(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,80)+'px';}
+</script>
+
+<style>
+.chat-btn{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#7c6fff,#5b21b6);border:none;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 4px 20px rgba(124,111,255,.5);z-index:1000;transition:.2s;display:flex;align-items:center;justify-content:center}
+.chat-btn:hover{transform:scale(1.08)}
+.chat-panel{position:fixed;bottom:88px;right:12px;width:calc(100vw - 24px);max-width:380px;height:480px;background:#fff;border-radius:20px;box-shadow:0 8px 40px rgba(0,0,0,.2);z-index:999;display:none;flex-direction:column;overflow:hidden}
+.chat-panel.open{display:flex}
+.chat-hdr{background:linear-gradient(135deg,#1a1a2e,#2d1b69);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.chat-hdr .t{font-weight:700;font-size:14px}
+.chat-hdr .s{font-size:11px;color:#c4b5fd;margin-top:1px}
+.chat-x{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1;opacity:.8}
+#chatMsgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:86%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.5;word-break:break-word}
+.msg.user{align-self:flex-end;background:#7c6fff;color:#fff;border-bottom-right-radius:4px}
+.msg.assistant{align-self:flex-start;background:#f0f0f5;color:#1a1a2e;border-bottom-left-radius:4px}
+#chatBar{padding:10px;border-top:1px solid #f0f0f5;display:none;gap:8px;align-items:flex-end;flex-shrink:0}
+#cinput{flex:1;border:1.5px solid #e0e0e8;border-radius:12px;padding:9px 12px;font-size:13px;font-family:inherit;resize:none;max-height:80px;outline:none}
+#cinput:focus{border-color:#7c6fff}
+#csend{background:#7c6fff;border:none;color:#fff;border-radius:10px;padding:9px 14px;cursor:pointer;font-size:16px;flex-shrink:0}
+#csend:disabled{opacity:.4;cursor:default}
+</style>
+
+<button class="chat-btn" onclick="toggleChat()">💬</button>
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-hdr">
+    <div><div class="t">💜 Consultor Financeiro</div><div class="s">Emillyn & Matheus · Set/26</div></div>
+    <button class="chat-x" onclick="toggleChat()">×</button>
+  </div>
+  <div id="chatMsgs"></div>
+  <div id="chatBar">
+    <textarea id="cinput" rows="1" placeholder="Ex: quero comprar X por R$150, vale?" onkeydown="hkey(event)" oninput="arz(this)"></textarea>
+    <button id="csend" onclick="send()">➤</button>
+  </div>
+</div>
+</body>
+</html>
